@@ -1,7 +1,7 @@
 from logging import LogRecord
 from logging.handlers import QueueListener
 from queue import Empty, Queue
-from time import monotonic_ns
+from time import monotonic_ns, sleep
 from typing import Any, Callable
 
 from buffering_queue_logger.handlers import BufferingQueueHandler
@@ -31,7 +31,12 @@ def _monitor_queue_and_flush_buffer(
         curr_time_ns = _curr_time_ns_func()
 
         try:
-            record = dequeue_func(True)
+            # The Python core QueueListener passes block=True, which makes this loop
+            # wait at this line, for as long as necessary, between log messages being
+            # received. We instead pass block=False, because we want to keep looping
+            # constantly, regardless of whether log messages are being received or not,
+            # so that we can periodically flush the buffer.
+            record = dequeue_func(False)
 
             if record is sentinel_value:  # pragma: no cover
                 is_queue_exhausted = True
@@ -42,7 +47,10 @@ def _monitor_queue_and_flush_buffer(
             if has_task_done:
                 buffering_log_queue.task_done()
         except Empty:  # pragma: no cover
-            is_queue_exhausted = True
+            # The Python core QueueListener breaks out of the loop here. We instead
+            # sleep for a wee bit, then let the buffer flush if it's time to do so,
+            # then loop back around and check for more log messages.
+            sleep(0.01)
 
         if (
             prev_time_ns is not None

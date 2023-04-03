@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "buffering-queue-logger"
-version = "0.1.1"
+version = "0.2.0"
 description = "Helpers for sending logs to a destination in batches using a buffer in a queue alongside any Python app."
 authors = ["Jeremy Epstein <jazepstein@gmail.com>"]
 homepage = "https://github.com/Jaza/buffering-queue-logger"
