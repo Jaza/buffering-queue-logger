@@ -89,7 +89,7 @@ class BufferingQueueListener(QueueListener):  # pragma: no cover
         """
         _monitor_queue_and_flush_buffer(
             buffering_log_queue=self.queue,
-            deque_func=self.dequeue,
+            dequeue_func=self.dequeue,
             sentinel_value=self._sentinel,
             handle_func=self.handle,
             buffering_handler=self.buffering_handler,
