@@ -27,7 +27,9 @@ def _get_aggregated_logs(
 
     for record in records:
         key = get_log_aggregator_key_func(record, context)
-        records_aggregated.setdefault(key, []).append(record)
+
+        if key is not None:
+            records_aggregated.setdefault(key, []).append(record)
 
     return records_aggregated
 
